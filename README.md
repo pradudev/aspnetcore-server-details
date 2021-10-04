@@ -1,0 +1,1 @@
+# aspnetcore-server-details
