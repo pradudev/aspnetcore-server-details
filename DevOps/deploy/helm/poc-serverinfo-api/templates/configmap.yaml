@@ -1,0 +1,13 @@
+{{- $name := include "poc-serverinfo-api.fullname" . -}}
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "{{ $name }}-config"
+  labels:
+    app: {{ $name }}
+    chart: {{ template "poc-serverinfo-api.chart" .}}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+  aspnet_env: dev

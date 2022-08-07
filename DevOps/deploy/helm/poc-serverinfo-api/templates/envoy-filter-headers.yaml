@@ -1,0 +1,57 @@
+{{- $name := include "poc-serverinfo-api.fullname" . -}}
+
+apiVersion: networking.istio.io/v1alpha3
+kind: EnvoyFilter
+metadata:
+  name: "{{ $name }}-ef"
+  labels:
+    {{- include "poc-serverinfo-api.labels" . | nindent 4 }}
+spec:
+  workloadSelector:
+    labels:
+      app: {{ $name }}
+  configPatches:
+    # The first patch adds the lua filter to the listener/http connection manager
+  - applyTo: HTTP_FILTER
+    match:
+      context: SIDECAR_INBOUND
+      listener:
+        portNumber: 80
+        filterChain:
+          filter:
+            name: "envoy.http_connection_manager"
+            subFilter:
+              name: "envoy.router"
+    patch:
+      operation: INSERT_BEFORE
+      value: # lua filter specification
+       name: envoy.lua
+       typed_config:
+        "@type": "type.googleapis.com/envoy.extensions.filters.http.lua.v3.Lua"
+        inlineCode: | 
+          function envoy_on_request(request_handle)
+            function unescape (str)
+              str = string.gsub (str, "+", " ")
+              str = string.gsub (str, "%%(%x%x)", function(h) return string.char(tonumber(h,16)) end)
+              return str
+            end
+      
+            function parseurl(s)
+              local ans = {}
+              for k,v in s:gmatch('([^;=:]-)=([^;=:]+)' ) do
+                ans[ k ] = v
+              end
+              return ans
+            end
+
+            local xffc_header = request_handle:headers():get("x-forwarded-client-cert")          
+            local cert_keys = parseurl(xffc_header)         
+            local certoneline = string.gsub(cert_keys["Cert"],('%%0A'),'')
+            local urldecoded = unescape(certoneline) 
+            local certbasebegin = string.gsub(urldecoded,'BEGIN CERTIFICATE','')
+            local certbaseend = string.gsub(certbasebegin ,'END CERTIFICATE','')  
+            local certbasedash = string.gsub(certbaseend,"(-)",'')
+            local certbasefinal = string.gsub(certbasedash,"(\")",'')
+          
+            request_handle:headers():add("X-ARR-ClientCert", certbasefinal)
+          end
