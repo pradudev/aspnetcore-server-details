@@ -29,8 +29,6 @@ namespace ServerDetails.Controllers
         [HttpGet]
         public ActionResult<string> Get()
         {
-            _logger.LogInformation($"Executing /healthz endpoint @ {DateTime.Now:HH:mm:ss:ffff}");
-
             var responseSec = 1;
 
             if (System.IO.File.Exists("health-response-time-secs.txt"))

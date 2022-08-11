@@ -31,8 +31,6 @@ namespace ServerDetails.Controllers
         [HttpGet]
         public ActionResult<object> Get()
         {
-            _logger.LogInformation("Executing /serverinfo endpoint");
-
             dynamic reqObj = new ExpandoObject();
 
             reqObj.TitleMsg = _configuration["TitleMsg"];

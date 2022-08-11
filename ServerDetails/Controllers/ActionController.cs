@@ -38,8 +38,6 @@ namespace ServerDetails.Controllers
         [HttpGet("grace-term")]
         public ActionResult<string> GraceTerm()
         {
-            _logger.LogInformation("Executing /action/grace-term endpoint");
-
             _applicationLifetime.StopApplication();
             return "Response from /action/grace-term endpoint";
         }
@@ -47,8 +45,6 @@ namespace ServerDetails.Controllers
         [HttpGet("non-grace-term")]
         public ActionResult<string> NonGraceTerm()
         {
-            _logger.LogInformation("Executing /action/non-grace-term endpoint");
-
             Environment.Exit(-1);
             return "Response from /action/non-grace-term endpoint";
         }
@@ -56,17 +52,14 @@ namespace ServerDetails.Controllers
         [HttpGet("app-execption")]
         public ActionResult AppException()
         {
-            _logger.LogInformation("Executing /action/app-execption endpoint");
 
             throw new Exception("App Exception");
-
         }
 
 
         [HttpGet("update-ready-state")]
         public ActionResult SetReadyState(string isReady)
         {
-            _logger.LogInformation("Executing /action/app-execption endpoint");
 
             System.IO.File.WriteAllText("ready-state.txt", isReady);
 
@@ -76,7 +69,6 @@ namespace ServerDetails.Controllers
         [HttpGet("is-ready")]
         public ActionResult<string> IsReady()
         {
-            _logger.LogInformation($"Executing /action/is-ready endpoint @ {DateTime.Now:HH:mm:ss:ffff}");
 
             var isReady = "true";
 
