@@ -18,7 +18,7 @@ namespace ServerDetails.Middlewares
             var timer = new Stopwatch();
             timer.Start();
 
-            _logger.LogInformation($"Request for {context.Request.Path}");
+            _logger.LogInformation($"Request for {context.Request.Path} from IP: {context.Connection.RemoteIpAddress?.ToString()}");
 
             // Call the next delegate/middleware in the pipeline.
             await _next(context);
