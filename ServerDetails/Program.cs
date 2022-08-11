@@ -1,11 +1,15 @@
 ﻿using Microsoft.OpenApi.Models;
 using Serilog;
+using Serilog.Events;
 using ServerDetails.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Host.UseSerilog((ctx, lc) => lc
+    .MinimumLevel.Information()
+    .MinimumLevel.Override("System", LogEventLevel.Warning)
+    .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
     .WriteTo.Console()
     .WriteTo.File(@"logs\log-.txt", rollingInterval: RollingInterval.Day));
 
