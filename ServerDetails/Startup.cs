@@ -37,7 +37,7 @@ namespace ServerDetails
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IApplicationLifetime applicationLifetime)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime applicationLifetime)
         {
             applicationLifetime.ApplicationStarted.Register(() => Console.WriteLine("ApplicationStarted called"));
             applicationLifetime.ApplicationStopping.Register(() => { 

@@ -1,29 +1,37 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.OpenApi.Models;
+using Serilog;
+using ServerDetails.Middlewares;
 
-namespace ServerDetails
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
+builder.Host.UseSerilog((ctx, lc) => lc
+    .WriteTo.Console()
+    .WriteTo.File(@"logs\log-.txt", rollingInterval: RollingInterval.Day));
+
+builder.Services.AddControllers();
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(c =>
 {
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            Console.WriteLine($"Process : {Process.GetCurrentProcess().Id}/{Process.GetCurrentProcess().ProcessName}");
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Asp.Net Core 6.0 Server Details Info", Version = "v1" });
+});
 
-            CreateHostBuilder(args).Build().Run();
-        }
+var app = builder.Build();
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
-    }
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "ServerInfo API v1"));
 }
+
+app.UseHttpsRedirection();
+
+app.UseAuthorization();
+
+app.MapControllers();
+
+app.UseRequestLogging();
+
+app.Run();
