@@ -1,12 +1,12 @@
-{{- $name := include "poc-serverinfo-api.fullname" . -}}
+{{- $name := include "serverinfo-api.fullname" . -}}
 
 apiVersion: v1
 kind: Service
 metadata:
   name: "{{ $name }}-svc"
   labels:
-    app.kubernetes.io/name: {{ template "poc-serverinfo-api.name" . }}
-    chart: {{ template "poc-serverinfo-api.chart" . }}
+    app.kubernetes.io/name: {{ template "serverinfo-api.name" . }}
+    chart: {{ template "serverinfo-api.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
@@ -15,7 +15,7 @@ spec:
     - port: 80
       targetPort: 80
       protocol: TCP
-      name: http-web
+      name: http
   selector:
     app: {{ $name }}
     release: {{ .Release.Name }}

@@ -49,7 +49,7 @@ namespace ServerDetails.Controllers
             };*/
 
             reqObj.networkInfo = GetNetworkInfo();
-
+            reqObj.outboundIp = GetOutboundIp();
             reqObj.userDomainName = Environment.UserDomainName;
             reqObj.domainController = Environment.GetEnvironmentVariable("LOGONSERVER");
             reqObj.userName = Environment.UserName;
@@ -72,8 +72,8 @@ namespace ServerDetails.Controllers
                 clientHostPort = Request.HttpContext.Connection.RemotePort,
                 serverHostIp = Request.HttpContext.Connection.LocalIpAddress.ToString(),
                 serverHostPort = Request.HttpContext.Connection.LocalPort,
-                serverHostIp2 = Request.Host.Host,
-                serverHostPort2 = Request.Host.Port,
+                requestHostName = Request.Host.Host,
+                requestHostPort = Request.Host.Port,
                 xForwardedFor = Request.Headers["X-Forwarded-For"],
                 xForwardedProto = Request.Headers["X-Forwarded-Proto"],
                 xForwardedPort = Request.Headers["X-Forwarded-Port"]
@@ -150,6 +150,19 @@ namespace ServerDetails.Controllers
             return string.Join(", ", (object[])dnsList);
         }
 
+        private string GetOutboundIp()
+        {
+            string outboundIp = string.Empty;
+
+            using (HttpClient httpClient = new HttpClient())
+            {
+                outboundIp = httpClient.GetStringAsync("https://api.ipify.org").Result;
+            }
+
+            return outboundIp;
+
+        }
+
         private string GetDefaultGateway()
         {
             var gatewayIp = NetworkInterface
@@ -194,7 +207,8 @@ namespace ServerDetails.Controllers
                     ipAddress = ni.GetIPProperties()?.UnicastAddresses.FirstOrDefault()?.Address.ToString(),
                     subnetMask = ni.GetIPProperties()?.UnicastAddresses.FirstOrDefault()?.IPv4Mask.ToString(),
                     defaultGateway = ni.GetIPProperties()?.GatewayAddresses.FirstOrDefault()?.Address.ToString(),
-                    dhcpServer = ni.GetIPProperties()?.DhcpServerAddresses.FirstOrDefault()?.ToString()
+                    dhcpServer = ni.GetIPProperties()?.DhcpServerAddresses.FirstOrDefault()?.ToString(),
+                    dnsServers = ni.GetIPProperties()?.DnsAddresses.Select(x => x.ToString()).ToList()
                 };
 
                 listObj.Add(niObj);

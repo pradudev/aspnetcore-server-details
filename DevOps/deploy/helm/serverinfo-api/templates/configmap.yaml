@@ -1,4 +1,4 @@
-{{- $name := include "poc-serverinfo-api.fullname" . -}}
+{{- $name := include "serverinfo-api.fullname" . -}}
 
 apiVersion: v1
 kind: ConfigMap
@@ -6,7 +6,7 @@ metadata:
   name: "{{ $name }}-config"
   labels:
     app: {{ $name }}
-    chart: {{ template "poc-serverinfo-api.chart" .}}
+    chart: {{ template "serverinfo-api.chart" .}}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 data:

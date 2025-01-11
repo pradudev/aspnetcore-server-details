@@ -1,12 +1,12 @@
-{{- $name := include "poc-serverinfo-api.fullname" . -}}
+{{- $name := include "serverinfo-api.fullname" . -}}
 {{- $cfgname := printf "%s-%s" $name "config" -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "poc-serverinfo-api.fullname" . }}
+  name: {{ template "serverinfo-api.fullname" . }}
   labels:
     app: {{ $name }}
-    chart: {{ template "poc-serverinfo-api.chart" . }}
+    chart: {{ template "serverinfo-api.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
     version: {{ .Chart.AppVersion }}
@@ -23,7 +23,7 @@ spec:
         release: {{ .Release.Name }}
         version: {{ .Chart.AppVersion }}
     spec:
-      serviceAccountName: {{ include "poc-serverinfo-api.serviceAccountName" . }}
+      serviceAccountName: {{ include "serverinfo-api.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
@@ -49,7 +49,7 @@ spec:
           {{- end -}}
           {{- end }}
           ports:
-            - name: http-web
+            - name: http
               containerPort: 80
               protocol: TCP
           resources:
